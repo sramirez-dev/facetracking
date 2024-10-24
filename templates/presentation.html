@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentación - Visión Artificial en Emociones</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background: #000;
+            color: #fff;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        /* Fondo de universo con estrellas */
+        .universe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.8), rgba(0,0,0,1)), url('https://www.solarsystemscope.com/textures/download/2k_stars.jpg') no-repeat center center/cover;
+            z-index: -1;
+        }
+
+        /* Partículas flotantes simulando estrellas o planetas pequeños */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+            opacity: 0.8;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+            }
+            50% {
+                transform: translateY(-60vh) translateX(40vw);
+            }
+            100% {
+                transform: translateY(-120vh) translateX(0);
+            }
+        }
+
+        h1 {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            letter-spacing: 0.3rem;
+            color: #ffffff;
+            animation: fadeIn 3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .start-btn {
+            background-color: transparent;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border: 2px solid rgba(52,152,219,1);
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.1rem;
+            cursor: pointer;
+            transition: background-color 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .start-btn:hover {
+            background-color: rgba(52,152,219,1);
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(52,152,219,0.6), 0 0 30px rgba(241,196,15,0.6), 0 0 40px rgba(231,76,60,0.6);
+        }
+
+        .start-btn:focus {
+            outline: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="universe"></div>
+
+    <!-- Capa de partículas para el fondo -->
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-duration: 20s;"></div>
+        <div class="particle" style="left: 25%; animation-duration: 15s;"></div>
+        <div class="particle" style="left: 50%; animation-duration: 22s;"></div>
+        <div class="particle" style="left: 70%; animation-duration: 18s;"></div>
+        <div class="particle" style="left: 85%; animation-duration: 25s;"></div>
+        <div class="particle" style="left: 40%; animation-duration: 17s;"></div>
+        <div class="particle" style="left: 60%; animation-duration: 30s;"></div>
+        <div class="particle" style="left: 90%; animation-duration: 12s;"></div>
+    </div>
+
+    <div class="container">
+        <h1>VISIÓN ARTIFICIAL EN EMOCIONES</h1>
+        <a href="{{ url_for('start') }}">
+            <button class="start-btn">Iniciar</button>
+        </a>
+    </div>
+</body>
+</html>

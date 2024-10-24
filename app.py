@@ -1,7 +1,7 @@
 import signal
 import sys
 import cv2
-from flask import Flask, render_template, Response, jsonify, send_from_directory
+from flask import Flask, render_template, Response, jsonify, send_from_directory, redirect, url_for
 import time
 import os
 from datetime import datetime
@@ -130,12 +130,21 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 @app.route('/')
+def presentation():
+    return render_template('presentation.html')
+
+@app.route('/start')
+def start():
+    return redirect(url_for('index'))
+
+@app.route('/index')
 def index():
     return render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():
     return Response(generar_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 if __name__ == "__main__":
     app.run(debug=True)
