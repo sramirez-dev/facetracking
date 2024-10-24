@@ -5,12 +5,18 @@ from flask import Flask, render_template, Response, jsonify, send_from_directory
 import time
 import os
 from datetime import datetime
-import csv
 import pytz
 from deepface import DeepFace
-
+import firebase_admin
+from firebase_admin import credentials, db
 
 app = Flask(__name__)
+
+# Inicialización de Firebase
+cred = credentials.Certificate("emociones-cac13-firebase-adminsdk-uodd4-d3d0661914.json")
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://emociones-cac13-default-rtdb.firebaseio.com/'  # Actualiza con la URL de tu proyecto
+})
 
 # Variables para el registro de emociones y tiempo
 camera = cv2.VideoCapture(0)  # Mover la cámara a nivel global para poder liberarla correctamente
@@ -27,25 +33,22 @@ emotion_totals = {
 emotion_count = 0  # Contador de cuántos frames con emociones se han registrado
 start_time = time.time()
 log_interval = 2 * 60  # 2 minutos en segundos
-log_folder = "Logs"
-
-# Asegurarse de que la carpeta "Logs" existe
-if not os.path.exists(log_folder):
-    os.makedirs(log_folder)
 
 # Definir la zona horaria para UTC-6 (América Central)
 timezone = pytz.timezone('America/El_Salvador')
 
-# Función para guardar emociones en un archivo CSV
-def save_emotion_log(emotions):
-    log_file = os.path.join(log_folder, f"emociones_{datetime.now(timezone).strftime('%Y%m%d_%H%M%S')}.csv")
+# Función para guardar emociones en Firebase Realtime Database
+def save_emotion_log_to_firebase(emotions):
+    ref = db.reference('emociones')  # Referencia al nodo "emociones" en Firebase
     
-    with open(log_file, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Timestamp', 'Emotion'])
-        
-        for emotion in emotions:
-            writer.writerow([emotion['time'], emotion['emotion']])
+    # Datos que se enviarán a Firebase
+    log_data = {
+        'timestamp': datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S'),
+        'emotion_log': emotions
+    }
+    
+    # Guardar en Firebase
+    ref.push(log_data)
 
 # Función para procesar los frames y detectar emociones
 def generar_frames():
@@ -88,11 +91,11 @@ def generar_frames():
         except Exception as e:
             print(f"Error al detectar emociones: {e}")
 
-        # Guardar el log cada 2 minutos
+        # Guardar el log cada 2 minutos en Firebase
         current_time = time.time()
         if current_time - start_time >= log_interval:
-            save_emotion_log(emotion_log)
-            emotion_log = []
+            save_emotion_log_to_firebase(emotion_log)  # Guardar en Firebase
+            emotion_log = []  # Limpiar el registro de emociones
             start_time = current_time
 
         ret, buffer = cv2.imencode('.jpg', frame)
@@ -128,16 +131,11 @@ signal.signal(signal.SIGINT, signal_handler)
 
 @app.route('/')
 def index():
-    log_files = os.listdir(log_folder)
-    return render_template('index.html', log_files=log_files)
+    return render_template('index.html')
 
 @app.route('/video_feed')
 def video_feed():
     return Response(generar_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/download_log/<filename>')
-def download_log(filename):
-    return send_from_directory(log_folder, filename)
 
 if __name__ == "__main__":
     app.run(debug=True)
