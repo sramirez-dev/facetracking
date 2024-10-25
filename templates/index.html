@@ -201,14 +201,16 @@
                     emotionChart.update();
 
                     // Encontrar la emoción dominante
-                    let dominantEmotion = "Neutral";
-                    let maxValue = 0;
-                    for (const [emotion, value] of Object.entries(data.emotions)) {
-                        if (value > maxValue) {
-                            maxValue = value;
-                            dominantEmotion = emotion.charAt(0).toUpperCase() + emotion.slice(1);
-                        }
-                    }
+                   // Encontrar la emoción dominante, ignorando 'Neutral' si hay otra emoción con un valor más alto
+let dominantEmotion = "Neutral";
+let maxValue = 0;
+for (const [emotion, value] of Object.entries(data.emotions)) {
+    if (emotion !== 'neutral' && value > maxValue) {  // Ignorar 'neutral'
+        maxValue = value;
+        dominantEmotion = emotion.charAt(0).toUpperCase() + emotion.slice(1);
+    }
+}
+
 
                     // Actualizar el resumen de la emoción dominante
                     document.getElementById('dominantEmotion').textContent = `Dominant Emotion: ${dominantEmotion}`;

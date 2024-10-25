@@ -79,7 +79,7 @@ def generar_frames():
                 emotion_count += 1
 
             # Registrar emoción dominante
-            emocion_dominante = max(emociones, key=emociones.get)
+            emocion_dominante = max(emociones, key=lambda emotion: emociones[emotion] if emotion != 'neutral' else -1)
             emotion_log.append({'time': datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S'), 'emotion': emocion_dominante})
 
             # Dibujar un rectángulo alrededor del rostro y mostrar la emoción dominante
